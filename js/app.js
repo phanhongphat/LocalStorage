@@ -3,6 +3,7 @@
 //add event save tweet
 document.querySelector('#form').addEventListener('submit',newTweet);
 document.querySelector('#tweet-list').addEventListener('click',removeTweet);
+document.addEventListener('DOMContentLoaded', localStorageOnLoad);
 
 function newTweet(e){
 	e.preventDefault();
@@ -30,6 +31,8 @@ function removeTweet(e){
 	if(e.target.classList.contains('remove-tweet')){
 		e.target.parentElement.remove();
 	}
+
+	removeTweetLocalStorage(e.target.parentElement.textContent);
 }
 
 function addTweetLocalStorage(text){
@@ -52,4 +55,39 @@ function getTweetsLocalStorage(){
 		data = JSON.parse(tweetsLS);
 	}
 	return data;
+}
+
+function localStorageOnLoad() {
+	let info = getTweetsLocalStorage();
+
+	//loop to print values from localStorage
+	info.forEach(function(text){
+		const li = document.createElement('li');
+		//add content to <div> My tweet
+		li.textContent = text;
+		document.querySelector('#tweet-list').appendChild(li);
+
+		//remove button
+		const remove = document.createElement('a');
+		remove.textContent = 'X';
+		remove.classList = 'remove-tweet';
+		li.appendChild(remove);
+	});
+}
+
+function removeTweetLocalStorage(text) {
+	//get array tweets from local storage
+	let tweets = getTweetsLocalStorage();
+
+	//remove X from each line
+	const tweetDelete = text.substring(0,text.length -1);
+	console.log(text);
+
+	tweets.forEach(function(tweetLS,index){
+		if(tweetDelete === tweetLS){
+			tweets.splice(index, 1);
+		}
+	});
+	//save data 
+	localStorage.setItem('tweets', JSON.stringify(tweets));
 }
